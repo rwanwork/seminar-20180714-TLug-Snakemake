@@ -1,0 +1,89 @@
+\documentclass{beamer}
+
+% \usetheme{AnnArbor}
+\usetheme{Singapore}
+\usecolortheme{dolphin}
+
+\mode<presentation>
+
+\usepackage{xspace}
+\usepackage{multicol}
+\usepackage{amssymb}
+\usepackage{tabularx}
+\usepackage{wasysym}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{mathtools}
+\usepackage[style=authoryear,backend=biber]{biblatex}
+\usepackage{wrapfig}
+\usepackage{listings}
+
+\usepackage{keystroke}  %% \Return
+% \usepackage{menukeys} 
+% \verb|\Return| \Return % from package keystroke
+
+\newcommand{\vs}{\vspace{0.5cm}}
+
+\graphicspath{{./graphs/}{./imgs/}{./photos/}
+}
+\DeclareGraphicsExtensions{.eps}
+
+% \AtBeginSection{\frame{\sectionpage}}
+\AtBeginSection[] % Do nothing for \section*
+{
+\begin{frame}<beamer>
+\frametitle{Outline}
+\tableofcontents[currentsection]
+\end{frame}
+}
+\setbeamertemplate{footline}[frame number]
+
+\include{colour}
+\include{layout-text}
+\include{layout-tables}
+
+\begin{document}
+
+
+\title{Snakemake}
+\author{Raymond Wan}
+\date{July 14, 2018}
+
+\maketitle
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\include{intro}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Basics}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\include{basics}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Hints}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\include{hints}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\include{conclude}
+
+
+\end{document}
+
+

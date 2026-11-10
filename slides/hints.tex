@@ -1,0 +1,122 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Including Files}
+
+The {\texttt{Snakefile}} can be organized better using the {\blue{include}} directive:
+\vs
+
+\begin{figure}
+%   \centering
+  \begin{tabular}{lc}
+  include:  "accessors.py" \\
+  \end{tabular}
+\end{figure}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Constraints}
+
+If a file specification has a mix of variables (i.e., {\texttt{\{dataset\}-\{count\}}}, then Snakemake cannot parse the filename {\texttt{iris-2-42}}.  One solution is to employ constraints on variables:
+
+\begin{figure}
+%   \centering
+  \begin{tabular}{lc}
+  wildcard\_constraints: \\
+  {\D\D}count = "{\textbackslash}d+" \\
+  \end{tabular}
+\end{figure}
+
+Python regular expressions are allowed.  Thus, it might even be better to say {\texttt{dataset}} cannot have hyphens and use underscores instead.
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Configuration File}
+
+Allows the specification of a YAML file, which is then read in as a global dictionary.  If {\texttt{config.yaml}} looks like this:
+\vs
+
+\begin{figure}
+%   \centering
+  \begin{tabular}{lc}
+  datasets:\\
+  {\D\D}iris:\\
+  {\D\D}{\D\D}numcols: 5\\
+  \end{tabular}
+\end{figure}
+
+Read it in like this in your {\texttt{Snakefile}}:
+
+\begin{figure}
+%   \centering
+  \begin{tabular}{lc}
+  configfile: "config.yaml" \\
+  \end{tabular}
+\end{figure}
+
+And then access it like this:
+
+\begin{figure}
+%   \centering
+  \begin{tabular}{lc}
+  curr\_sample = "iris"\\
+  numcols = config['datasets'][curr\_sample]['numcols']\\
+  \end{tabular}
+\end{figure}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Suggestions}
+
+\begin{itemize}
+  \item Suggest each rule write to a {\green{different}} directory to avoid the possibility of a circular dependency.
+  \item If a shell command in a rule returns a non-zero value, the rule fails and (for safety reasons) all outputs are deleted since they are inconsistent.
+  \item Log files for programs should {\red{not}} be specified in the {\blue{output}} directive.
+\end{itemize}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Running Snakemake}
+
+\begin{itemize}
+  \item After running {\texttt{Snakemake}}, a ``hidden'' directory called {\texttt{.snakemake}} is created which keeps track of its progress.  If you need to reset things, then just erase this directory.
+  \item If a previous run was interrupted, then use the {\texttt{--unlock}} argument to remove the lock on the working directory.
+\end{itemize}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Running Snakemake}
+
+In fact, Snakemake has many useful command-line arguments:
+    \begin{itemize}
+      \item {\texttt{--configfile}}  Explicitly specify the configuration file.
+      \item {\texttt{--cores}}  Set the number of cores to use.
+      \item {\texttt{--printshellcmds}} / {\texttt{-p}}  Print shell commands as they are executed.
+      \item {\texttt{--dag}}  Output a directed acyclic graph in the dot language.
+      \item {\texttt{--dryrun}}  Perform a dry run.
+      \item {\texttt{--list}}  List rules in the Snakefile.
+      \item {\texttt{--forceall}} / {\texttt{-F}}  Force the execution of a rule and all subsequent rules.
+    \end{itemize}
+
+\end{frame}
+

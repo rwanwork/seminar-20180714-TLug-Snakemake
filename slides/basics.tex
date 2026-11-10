@@ -1,0 +1,451 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Rules}
+
+A Snakemake workflow consists of a Snakemake file ({\texttt{Snakefile}}) that consists of a set of rules.
+\vs
+
+Each rule specifies a series of {\blue{directives}}, which includes at least:
+\begin{enumerate}
+  \item input files,
+  \item output files, and
+  \item how to generate the output files from the input files
+\end{enumerate}
+\vs
+
+In many ways, this is similar to Make and Galaxy.
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+
+\frametitle{Sample Rule}
+
+Save the following in {\texttt{Snakefile}}:
+\begin{figure}
+  \centering
+  \begin{tabular}{lc}
+%   rule HelloWorld: & \action<+->{{\red{$\leftarrow$}}} \\
+  rule HelloWorld: & \only<1>{{\red{$\leftarrow$}}} \\
+  {\D\D}input:  "Download/iris.data" & \only<2>{{\red{$\leftarrow$}}} \\
+  {\D\D}output:  "HelloWorld/iris.txt" & \only<3>{{\red{$\leftarrow$}}} \\
+  {\D\D}shell: & \only<4>{{\red{$\leftarrow$}}} \\
+  {\D\D\D\D}""" & \only<5>{{\red{$\leftarrow$}}} \\
+  {\D\D\D\D}./helloworld \{input\} {\textgreater}\{output\} & \only<6>{{\red{$\leftarrow$}}} \\
+  {\D\D\D\D}"""  & \only<5>{{\red{$\leftarrow$}}} \\
+  \end{tabular}
+\end{figure}
+
+Note:  Variables are enclosed in curly braces.
+
+\end{frame}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+
+\frametitle{Sample Rule}
+
+{\magenta{\$  }}  {\texttt{snakemake HelloWorld/iris.txt}}
+{\tiny{
+\begin{figure}
+  \centering
+  \begin{tabular}{l}
+Building DAG of jobs... \\
+Provided cores: 1 \\
+Rules claiming more threads will be scaled down. \\
+Job counts: \\
+	count	jobs \\
+	1	HelloWorld \\
+	1 \\
+ \\
+rule HelloWorld: \\
+    input: Download/iris.data \\
+    output: HelloWorld/iris.txt \\
+    jobid: 0 \\
+ \\
+Finished job 0. \\
+1 of 1 steps (100\%) done \\
+  \end{tabular}
+\end{figure}
+}}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+
+\frametitle{Sample Rule}
+
+If the input doesn't exist, then the command will not work:
+\vs
+
+{\magenta{\$  }}  {\texttt{snakemake HelloWorld/not-exist.txt}}
+\begin{figure}
+  \centering
+  \begin{tabular}{l}
+Building DAG of jobs... \\
+MissingInputException in line 1 of Snakefile.py: \\
+Missing input files for rule HelloWorld: \\
+Download/not-exist.data \\
+  \end{tabular}
+\end{figure}
+
+Not surprisingly, the {\blue{input}} directive is a precondition for the rule to run.
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Variable Substitution}
+
+The interesting part of Snakemake (IMHO) occurs during variable substitution; commands can then be generalized.
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Variable Substitution}
+
+\begin{figure}
+  \centering
+  \begin{tabular}{lc}
+  rule HelloWorld: & \\
+  {\D\D}input:  "Download/\{dataset\}.data" & \only<2>{{\red{$\leftarrow$}}} \\
+  {\D\D}output:  "HelloWorld/\{dataset\}.txt" & \only<1>{{\red{$\leftarrow$}}} \\
+  {\D\D}shell: & \\
+  {\D\D\D\D}""" & \\
+  {\D\D\D\D}./helloworld \{input\} {\textgreater}\{output\} & \\
+  {\D\D\D\D}"""  & \\
+  \end{tabular}
+\end{figure}
+
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[fragile]
+
+\frametitle{Variable Substitution}
+
+For example:
+\vs
+
+\begin{itemize}
+  \item {\magenta{\$  }}  {\texttt{snakemake HelloWorld/abalone.txt}}
+  \item {\magenta{\$  }}  {\texttt{snakemake HelloWorld/iris.txt}}
+\end{itemize}
+\vs
+
+will both work as expected.
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Top-level Rule}
+
+Instead of typing {\texttt{snakemake}} followed by the output to be generated every time, like Make, there is a top-level rule called {\texttt{all}}.
+\vs
+
+It is special in that it has {\red{no}} output defined.
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Top-level Rule}
+
+\begin{figure}
+  \centering
+  \begin{tabular}{lc}
+  rule all: \\
+  {\D\D}input:  "HelloWorld/iris.txt" & \only<3>{{\red{$\leftarrow$}}} \\
+  \\
+  rule HelloWorld: & \\
+  {\D\D}input:  "Download/\{dataset\}.data" & \only<2>{{\red{$\leftarrow$}}} \\
+  {\D\D}output:  "HelloWorld/\{dataset\}.txt" & \only<1>{{\red{$\leftarrow$}}} \\
+  {\D\D}shell: & \\
+  {\D\D\D\D}""" & \\
+  {\D\D\D\D}./helloworld \{input\} {\textgreater}\{output\} & \\
+  {\D\D\D\D}"""  & \\
+  \end{tabular}
+\end{figure}
+
+Note:  The {\texttt{all}} rule must come first.
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Top-level Rule}
+
+{\magenta{\$  }}  {\texttt{snakemake}}
+{\tiny{
+\begin{figure}
+  \centering
+  \begin{tabular}{l}
+Building DAG of jobs... \\
+Provided cores: 1 \\
+Rules claiming more threads will be scaled down. \\
+Job counts: \\
+	count	jobs \\
+	1	HelloWorld \\
+	1	all \\
+	2 \\
+ \\
+rule HelloWorld: \\
+    input: Download/iris.data \\
+    output: HelloWorld/iris.txt \\
+    jobid: 1 \\
+    wildcards: dataset=iris \\
+ \\
+Finished job 1. \\
+1 of 2 steps (50\%) done \\
+ \\
+localrule all: \\
+    input: HelloWorld/iris.txt \\
+    jobid: 0 \\
+ \\
+Finished job 0. \\
+2 of 2 steps (100\%) done \\
+  \end{tabular}
+\end{figure}
+}}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Multiple Arguments}
+
+\begin{figure}
+  \centering
+  \begin{tabular}{lc}
+  rule HelloWorld: & \\
+  {\D\D}input:  "Download/iris.data", \\
+  {\D\D\D\D\D\D\D\D}"Download/abalone.data" \\
+  {\D\D}output:  "HelloWorld/iris.txt" \\
+  {\D\D}shell: \\
+  {\D\D\D\D}""" \\
+  {\D\D\D\D}\#\#  Assuming helloworld takes two arguments \\
+  {\D\D\D\D}./helloworld \{input\} {\textgreater}\{output\} & \only<1>{{\red{$\leftarrow$}}} \\
+  {\D\D\D\D}./helloworld \{input[0]\} \{input[1]\} {\textgreater}\{output\} & \only<2>{{\red{$\leftarrow$}}} \\
+  {\D\D\D\D}""" \\
+  \end{tabular}
+\end{figure}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Named Inputs/Outputs}
+
+\begin{figure}
+  \centering
+  \begin{tabular}{lc}
+  rule HelloWorld: & \\
+  {\D\D}input: \\
+  {\D\D\D\D}data1 = "Download/iris.data", \\
+  {\D\D\D\D}data2 = "Download/abalone.data" \\
+  {\D\D}output:  "HelloWorld/iris.txt" \\
+  {\D\D}shell: \\
+  {\D\D\D\D}""" \\
+  {\D\D\D\D}./helloworld \{input.data2\} {\textgreater}\{output\} & \only<1>{{\red{$\leftarrow$}}} \\
+  {\D\D\D\D}""" \\
+  \end{tabular}
+\end{figure}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Parameters}
+
+Within a rule, you might need access to non-file parameters for some reason.  This is where the {\blue{params}} directive is needed:
+% {\small{
+\begin{figure}
+  \centering
+  \begin{tabular}{lc}
+  rule HelloWorld: \\
+  {\D\D}input:  "Download/\{dataset\}.data" \\
+  {\D\D}output:  "HelloWorld/\{dataset\}.txt" \\
+  {\D\D}params: & \only<1>{{\red{$\leftarrow$}}} \\
+  {\D\D}{\D\D}count="42", & \only<2>{{\red{$\leftarrow$}}} \\
+  {\D\D}{\D\D}dataset="\{dataset\}" & \only<2>{{\red{$\leftarrow$}}} \\
+  {\D\D}shell: \\
+  {\D\D}{\D\D}""" \\
+  {\D\D}{\D\D}./helloworld --count \{params.count\} --label {\Return} & \only<3>{{\red{$\leftarrow$}}} \\
+  {\D\D}{\D\D}{\D\D}\{params.dataset\} \{input\} {\textgreater}\{output\} & \only<3>{{\red{$\leftarrow$}}} \\
+  {\D\D}{\D\D}""" \\
+  \end{tabular}
+\end{figure}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Functions for Inputs}
+
+Instead of listing the inputs within a rule, a Python function that returns a list can be used.  ({\red{Finally}}, some Python...  \smiley)
+\vs
+
+Functions cannot be defined for outputs, though.
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Functions for Inputs}
+
+{\small{
+\begin{figure}
+  \centering
+  \begin{tabular}{lc}
+  OUTPUT\_DIR = "Download/" & \only<7>{{\red{$\leftarrow$}}} \\
+  \\
+  def Get\_Inputs (foo): & \only<4>{{\red{$\leftarrow$}}} \\
+  {\D\D}my\_inputs = [] \\
+  {\D\D}my\_inputs.append (OUTPUT\_DIR + "iris.data") & \only<6>{{\red{$\leftarrow$}}} \\
+  {\D\D}my\_inputs.append (OUTPUT\_DIR + "abalone.data") & \only<6>{{\red{$\leftarrow$}}} \\
+  {\D\D}print ("Data set:  ", foo.dataset, "{\textbackslash}n") & \only<5>{{\red{$\leftarrow$}}} \\
+  {\D\D}return my\_inputs & \only<8>{{\red{$\leftarrow$}}} \\
+  \\
+  rule HelloWorld: & \only<1>{{\red{$\leftarrow$}}} \\
+  {\D\D}input: \\
+  {\D\D\D\D}Get\_Inputs & \only<3>{{\red{$\leftarrow$}}} \\
+  {\D\D}output:  "HelloWorld/\{dataset\}.txt" & \only<2>{{\red{$\leftarrow$}}} \\
+  {\D\D}shell: \\
+  {\D\D\D\D}""" \\
+  {\D\D\D\D}./helloworld \{input[1]\} {\textgreater}\{output\} & \only<9>{{\red{$\leftarrow$}}} \\
+  {\D\D\D\D}""" \\
+  \end{tabular}
+\end{figure}
+}}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Functions for Inputs}
+
+Here, we have:
+\begin{itemize}
+  \item Definition of a simple function, with arguments from the rule passed in.  (Also called {\green{wildcards}} in the documentation.)
+  \item Use of a global variable.
+\end{itemize}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Generating Output with Python}
+
+The {\blue{shell}} directive in a rule states ``how to generate the output files from the input files''.  The shell commands can be replaced with the {\blue{run}} directive followed by Python code.
+\vs
+
+Suppose we wanted to count the number of lines in a file:
+
+{\small{
+\begin{figure}
+  \centering
+  \begin{tabular}{lc}
+  rule Use\_WC: & \\
+  {\D\D}input:  "Download/\{dataset\}.data" & \\
+  {\D\D}output:  "Use\_WC/\{dataset\}.txt" & \\
+  {\D\D}shell: & \\
+  {\D\D}{\D\D}""" & \\
+  {\D\D}{\D\D}TMP\_FILE=`mktemp` & \only<1>{{\red{$\leftarrow$}}} \\
+  {\D\D}{\D\D}wc -l \{input\} {\textgreater}\{output\} & \\
+  {\D\D}{\D\D}rm -f \$\{\{TMP\_FILE\}\} & \only<2>{{\red{$\leftarrow$}}} \\
+  {\D\D}{\D\D}""" & \\
+  \end{tabular}
+\end{figure}
+}}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Generating Output with Python}
+
+This rule will achieve the same thing:
+
+{\small{
+\begin{figure}
+  \centering
+  \begin{tabular}{lc}
+  rule Use\_Python: & \\
+  {\D\D}input: & \\
+  {\D\D}{\D\D}input\_fn = "Download/\{dataset\}.data"  & \only<2>{{\red{$\leftarrow$}}} \\
+  {\D\D}output:  & \\ 
+  {\D\D}{\D\D}output\_fn = "Use\_Python/\{dataset\}.txt"  & \\
+  {\D\D}run:  & \only<1>{{\red{$\leftarrow$}}} \\
+  {\D\D}{\D\D}in\_fn = input.input\_fn  & \only<2>{{\red{$\leftarrow$}}} \\
+  {\D\D}{\D\D}in\_fp = open (in\_fn, 'r')  & \\
+  {\D\D}{\D\D}line\_count = 0  & \\
+  \\
+  {\D\D}{\D\D}line = in\_fp.readline ()  & \\
+  {\D\D}{\D\D}while line != '':  & \\
+  {\D\D}{\D\D}{\D\D}line\_count += 1  & \\
+  {\D\D}{\D\D}{\D\D}line = in\_fp.readline ()  & \\
+  \end{tabular}
+\end{figure}
+}}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+
+\frametitle{Generating Output with Python}
+
+{\small{
+\begin{figure}
+  \centering
+  \begin{tabular}{lc}
+  {\D\D}{\D\D}in\_fp.close ()  & \\
+  \\
+  {\D\D}{\D\D}\#\#  Write out the value  & \\
+  {\D\D}{\D\D}out\_fn = output.output\_fn  & \only<1>{{\red{$\leftarrow$}}} \\
+  {\D\D}{\D\D}out\_fp = open (out\_fn, 'w')  & \\
+  {\D\D}{\D\D}out\_fp.write (str (line\_count) + " " + in\_fn + "{\textbackslash}n")  & \\
+  {\D\D}{\D\D}out\_fp.close ()  & \\
+  \end{tabular}
+\end{figure}
+}}
+
+\end{frame}
